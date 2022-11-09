@@ -39,12 +39,14 @@ def mean (array):
         
         return m
 
-def selisih(array):
-    array1 = [0 for i in range(len(array))]
-    m = mean(array)
+def selisih(array, mean):
+    selisih = []
+    for i in range (len(array)):
+        selisih.append(np.subtract(array[i], mean))
+
+
     
-    for i in range(len(array)):
-        array1[i] = abs(array[i] - m)
+             
     
     return array1
     
