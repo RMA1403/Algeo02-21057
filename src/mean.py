@@ -58,7 +58,7 @@ def eigenface(array, eigenvec):
     
     return array2
 
-print(eigenface(arr, mock_matrix))
+# print(eigenface(arr, mock_matrix))
 
 
 #newmat = np.array([[1,2,3], [4,5,6]])
