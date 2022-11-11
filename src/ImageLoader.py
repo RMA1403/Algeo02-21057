@@ -41,6 +41,7 @@ eigfacearr = np.asarray(eigenface)
 
 testface = glob("./test/testImage/testFace/*.png")
 sampleimage = cv2.cvtColor((cv2.imread(testface[0])), cv2.COLOR_BGR2GRAY)
+sampleimage = sampleimage / 255
 selisihsam = abs(sampleimage - mean)
 EigFaceSam = np.matmul(EigVec, selisihsam)
 
