@@ -25,8 +25,8 @@ def qr_decomposition(M):
     return Q[:n].T, np.triu(R[:n])
 
 
-def eigenvalues(M):
-    """Fungsi untuk menghitung nilai-nilai eigen dari sebuah matriks"""
+def eigen(M):
+    """Fungsi untuk menghitung nilai eigen dan vektor eigen dari sebuah matriks"""
     # Validasi input terhadap matriks yang tidak persegi
     m, n = M.shape
     if m != n:
@@ -34,55 +34,67 @@ def eigenvalues(M):
 
     # Dekomposisi QR awal
     Q, R = qr_decomposition(M)
+    vec = Q
 
     # Melakukan perkalian matriks R dan Q hingga didapat matriks diagonal
     hasEigen = False
     for _ in range(5000):
         A = R @ Q
-        if np.allclose(A, np.triu(A), 0.01):
+        if np.allclose(A, np.triu(A), 0.0001):
             hasEigen = True
             break
         Q, R = qr_decomposition(A)
+        vec = vec @ Q
 
-    # Mengembalikan elemen-elemen diagonal utama yang merupakan nilai-nilai eigen dari matriks
+    # Mengembalikan nilai eigen dan vektor eigen dari matriks
     if (hasEigen):
         eigens = []
-        for i in range(M.shape[0]):
+        for i in range(m):
             if A[i][i] not in eigens and np.round(A[i][i]) != 0.0:
                 eigens.append(int(np.round(A[i][i])))
-        return eigens
+        for i in range(len(vec)):
+            for j in range(len(vec[0])):
+                vec[i][j] = np.round(vec[i][j], 3)
+        return eigens, vec
     else:
         return "Matriks tidak memiliki nilai eigen"
 
 
-# # Test case untuk beberapa matriks
+# Test case untuk beberapa matriks
+# A = np.array([[i+j for i in range(100)] for j in range(100)])
+# print(eigen(A)[1])
 
-# # Matriks 2x2
+
+# Matriks 2x2
 # A = np.array([[3, 0], [8, -1]])
 # print("Matrix A:\n", A)
-# print("Nilai eigen dari A:", eigenvalues(A))
+# print("Nilai eigen dari A:", eigen(A)[1])
+# print(np.linalg.eig(A)[1])
 
 # # Matriks 2x2
 # B = np.array([[1, 3], [3, 1]])
 # print("\nMatrix B:\n", B)
-# print("Nilai eigen dari B:", eigenvalues(B))
+# print("Nilai eigen dari B:", eigen(B)[1])
+# print(np.linalg.eig(B)[1])
 
 # # Matriks 3x3
 # C = np.array([[3, -2, 0], [-2, 3, 0], [0, 0, 5]])
 # print("\nMatrix C:\n", C)
-# print("Nilai eigen dari C:", eigenvalues(C))
+# print("Nilai eigen dari C:", eigen(C)[1])
+# print(np.linalg.eig(C)[1])
 
 # # Matriks dengan nilai eigen 0
 # D = np.array([[10, 0, 2], [0, 10, 4], [2, 4, 2]])
 # print("\nMatrix D:\n", D)
-# print("Nilai eigen dari D:", eigenvalues(D))
+# print("Nilai eigen dari D:", eigen(D)[1])
+# print(np.linalg.eig(D)[1])
 
 # # Matriks yang tidak memiliki nilai eigen
 # E = np.array([[-2, -1], [5, 2]])
 # print("\nMatrix E:\n", E)
-# print("Nilai eigen dari E:", eigenvalues(E))
+# print("Nilai eigen dari E:", eigen(E))
 
 # # Matriks yang bukan persegi
 # F = np.array([[-2, -1, 3], [5, 2, 8]])
 # print("\nMatrix F:\n", F)
-# print("Nilai eigen dari F:", eigenvalues(F))
+# print("Nilai eigen dari F:", eigen(F))
