@@ -38,9 +38,19 @@ def eigen(M):
 
     # Melakukan perkalian matriks R dan Q hingga didapat matriks diagonal
     hasEigen = False
-    for _ in range(5000):
+    for i in range(500):
         A = R @ Q
-        if np.allclose(A, np.triu(A), 0.0001):
+
+        isEqual = True
+        for i in range(A.shape[0]):
+            if (not isEqual):
+                break
+            for j in range(A.shape[1]):
+                if i != j and A[i][j] > 0.1:
+                    isEqual = False
+                    break
+
+        if isEqual:
             hasEigen = True
             break
         Q, R = qr_decomposition(A)
@@ -61,9 +71,6 @@ def eigen(M):
 
 
 # Test case untuk beberapa matriks
-# A = np.array([[i+j for i in range(100)] for j in range(100)])
-# print(eigen(A)[1])
-
 
 # Matriks 2x2
 # A = np.array([[3, 0], [8, -1]])

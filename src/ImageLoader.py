@@ -16,6 +16,7 @@ imgcount = len(test_image)
 imglist = []
 for i in range(imgcount):
     img = cv2.cvtColor(cv2.imread(test_image[i]), cv2.COLOR_BGR2GRAY)
+    img = img / 255
     imglist.append(img)
 
 imgarr = np.asarray(imglist)
@@ -26,13 +27,11 @@ for i in range(len(imgarr)):
 
 A = [[]for j in range(len(selisih[0]))]
 
-for i in range(len(selisih)): 
-    A = np.concatenate((A,selisih[i]), axis = 1)
+for i in range(len(selisih)):
+    A = np.concatenate((A, selisih[i]), axis=1)
 
 CovMat = cov.CovarianNumpy(A)
-
-Eig = np.linalg.eig(CovMat)
-EigVec = np.array(Eig[1])
+EigVec = np.array(eigval.eigen(CovMat)[1])
 
 eigenface = []
 for i in range(len(selisih)):
