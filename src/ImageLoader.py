@@ -9,13 +9,14 @@ import Eigenvector as eigvec
 import EucDistance as eucdis
 import mean
 
-test_image = glob("./test/testImage/*.png")
+test_image = glob("./test/testImage/*.png") + glob("./test/testImage/*.jpg")
 
 imgcount = len(test_image)
 
 imglist = []
 for i in range(imgcount):
-    img = cv2.cvtColor(cv2.imread(test_image[i]), cv2.COLOR_BGR2GRAY)
+    img = cv2.resize(cv2.cvtColor(cv2.imread(
+        test_image[i]), cv2.COLOR_BGR2GRAY), (256, 256))
     img = img / 255
     imglist.append(img)
 
@@ -39,8 +40,10 @@ for i in range(len(selisih)):
 
 eigfacearr = np.asarray(eigenface)
 
-testface = glob("./test/testImage/testFace/*.png")
-sampleimage = cv2.cvtColor((cv2.imread(testface[0])), cv2.COLOR_BGR2GRAY)
+testface = glob("./test/testImage/testFace/*.png") + \
+    glob("./test/testImage/testFace/*.jpg")
+sampleimage = cv2.resize(cv2.cvtColor(
+    (cv2.imread(testface[0])), cv2.COLOR_BGR2GRAY), (256, 256))
 sampleimage = sampleimage / 255
 selisihsam = abs(sampleimage - mean)
 EigFaceSam = np.matmul(EigVec, selisihsam)
@@ -59,5 +62,6 @@ idx = 0
 for i in range(len(eucdisarr)):
     if min > eucdisarr[i]:
         idx = i
+        min = eucdisarr[i]
 
 print(test_image[idx], eucdisarr[idx])
