@@ -87,25 +87,25 @@ def EucDistanceBase(new,test):
 
     return distance
 
-X = [[1,-1,0],
-    [-1,-1,0],
-    [0,0,0]]
+# X = [[1,-1,0],
+#     [-1,-1,0],
+#     [0,0,0]]
 
-Y = [[2,1,1],
-    [1,2,1],
-    [0,2,4]]
+# Y = [[2,1,1],
+#     [1,2,1],
+#     [0,2,4]]
 
-Z = [[1,0,1],
-    [0,1,0],
-    [0,2,3]]
+# Z = [[1,0,1],
+#     [0,1,0],
+#     [0,2,3]]
 
-test1 = [[0,-1,0],
-        [-2,-1,0],
-        [0,0,0]]
+# test1 = [[0,-1,0],
+#         [-2,-1,0],
+#         [0,0,0]]
 
-test2 = [[0,1,0],
-        [0,-1,0],
-        [0,0,0]]
+# test2 = [[0,1,0],
+#         [0,-1,0],
+#         [0,0,0]]
 
-eigennew = newFaceMatNumpy(X,Y,Z)
-EucDistanceBase(eigennew,test2)
+# eigennew = newFaceMatNumpy(X,Y,Z)
+# EucDistanceBase(eigennew,test2)
