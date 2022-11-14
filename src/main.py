@@ -6,6 +6,7 @@ import ImageLoader
 import asyncio
 import threading
 
+# Deklarasi variabel global
 filename = "./src/placeholder.jpg"
 dataset = ""
 result = "./src/placeholder.jpg"
@@ -16,6 +17,11 @@ result_data_frame = None
 euc_distance = None
 exec_time_frame = None
 exec_time = None
+dataset_folder_label = None
+test_image_file_label = None
+start_btn = None
+processing_label = None
+start_frame = None
 
 
 def _asyncio_thread(async_loop):
@@ -24,6 +30,23 @@ def _asyncio_thread(async_loop):
 
 def do_tasks(async_loop):
     threading.Thread(target=_asyncio_thread, args=(async_loop,)).start()
+
+
+def startAlgorithm():
+    """Fungsi untuk memulai algoritma pengenalan wajah"""
+    # Deklarasi variabel
+    global start_frame
+    global start_btn
+    global processing_label
+
+    # Menampilkan label "processing"
+    start_btn.destroy()
+    processing_label = tk.Label(
+        start_frame, text="Processing", fg="green", font=("Helvetica", 18, "bold"))
+    processing_label.configure(background='white')
+    processing_label.grid(row=0, column=0)
+
+    do_tasks(async_loop)
 
 
 async def loadImage(filename, dataset):
@@ -35,6 +58,10 @@ async def loadImage(filename, dataset):
     global euc_distance
     global exec_time_frame
     global exec_time
+    global start_btn
+    global processing_label
+    global startAlgorithm
+    global start_frame
 
     new_result = await ImageLoader.loadImage(filename, dataset)
     if new_result[0] != "":
@@ -62,8 +89,15 @@ async def loadImage(filename, dataset):
         exec_time.configure(background='white')
         exec_time.grid(row=0, column=0)
 
+        processing_label.destroy()
+        start_btn = tk.Button(start_frame, text="START", font=(
+            "Helvetica", 20, "bold"), command=startAlgorithm)
+        start_btn.grid(row=0, column=0)
+
 
 def main(async_loop):
+    """Fungsi untuk menampilkan user interface"""
+    # Deklarasi variabel
     global filename
     global dataset
     global result
@@ -72,15 +106,24 @@ def main(async_loop):
     global res_img
     global result_data_frame
     global exec_time_frame
+    global start_btn
+    global processing_label
+    global startAlgorithm
+    global start_frame
 
     def addTestImage():
         """Fungsi untuk menambahkan test image"""
+        # Deklarasi variabel
         nonlocal test_image
         nonlocal img
         global filename
-        new_filename = filedialog.askopenfilename(title="Select an image")
-        if new_filename != "":
-            filename = new_filename
+        global test_image_file_label
+        nonlocal image_input_frame
+
+        # Melakukan input file
+        filename = filedialog.askopenfilename(title="Select an image")
+        if filename != "":
+            # Menampilkan test image
             test_image.destroy()
             img = ImageTk.PhotoImage(Image.open(
                 filename).resize((256, 256)))
@@ -90,18 +133,37 @@ def main(async_loop):
             test_image.configure(background=bg_color)
             test_image.grid(row=1, column=0)
 
+            # Menampilkan nama file test image
+            if filename != "./src/placeholder.jpg":
+                if test_image_file_label != None:
+                    test_image_file_label.destroy()
+                test_image_file_label = tk.Label(
+                    image_input_frame, text=filename, wraplength=130, fg="green", font=("Helvetica", 7))
+                test_image_file_label.configure(background=bg_color)
+                test_image_file_label.grid(row=2, column=0)
+
     def addDataset():
         """Fungsi untuk menambahkan folder dataset"""
+        # Deklarasi variabel
         global dataset
-        dataset = filedialog.askdirectory(title="Select a dataset folder")
+        global dataset_folder_label
+        nonlocal dataset_input_frame
 
-    def startAlgorithm():
-        """Fungsi untuk memulai algoritma pengenalan wajah"""
-        do_tasks(async_loop)
+        # Melakukukan input folder
+        dataset = filedialog.askdirectory(title="Select a dataset folder")
+        if dataset != "":
+            # Menampilkan nama folder dataset
+            if dataset_folder_label != None:
+                dataset_folder_label.destroy()
+            dataset_folder_label = tk.Label(
+                dataset_input_frame, text=dataset, wraplength=130, fg="green", font=("Helvetica", 7))
+            dataset_folder_label.configure(background=bg_color)
+            dataset_folder_label.grid(row=2, column=0)
 
     # Konfigurasi warna
     bg_color = "white"
 
+    # Konfigurasi window
     window = tk.Tk(className=" Face Recognition by Never Tsurrender")
     window.configure(background=bg_color)
 
@@ -124,7 +186,8 @@ def main(async_loop):
     canvas_frame = tk.Frame(header_frame)
     canvas_frame.configure(background=bg_color)
 
-    line = tk.Canvas(canvas_frame, width=900, height=20, highlightthickness=0)
+    line = tk.Canvas(canvas_frame, width=900,
+                     height=20, highlightthickness=0)
     line.configure(background=bg_color)
     line.create_line(0, 17, 900, 17, width=3)
     line.pack(fill="both", expand=True)
@@ -170,7 +233,8 @@ def main(async_loop):
     start_frame = tk.Frame(main_frame, padx=10)
     start_frame.configure(background=bg_color)
 
-    start_btn = tk.Button(start_frame, text="START", command=startAlgorithm)
+    start_btn = tk.Button(start_frame, text="START", font=(
+        "Helvetica", 20, "bold"), command=startAlgorithm)
 
     start_frame.grid(row=3, column=0)
     start_btn.grid(row=0, column=0)
@@ -231,12 +295,13 @@ def main(async_loop):
     exec_time_frame.grid(row=5, column=1)
 
     # Padding bottom
-    padding_bottom = tk.Frame(main_frame, height=120)
+    padding_bottom = tk.Frame(main_frame, height=100)
     padding_bottom.configure(background=bg_color)
     padding_bottom.grid(row=6, column=0, columnspan=3)
 
     window.mainloop()
 
 
+# Loop utama program
 async_loop = asyncio.new_event_loop()
 main(async_loop)
