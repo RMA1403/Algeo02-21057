@@ -6,7 +6,7 @@ import time
 import Covarian as cov
 import Eigenvalue as eigval
 import EucDistance as eucdis
-import mean as Mean
+import mean_selisih as Mean
 
 async def loadImage(testface, test_image):
     start_time = time.time()
@@ -21,29 +21,24 @@ async def loadImage(testface, test_image):
     for i in range(imgcount):
         img = cv2.resize(cv2.cvtColor(cv2.imread(
             test_image[i]), cv2.COLOR_BGR2GRAY), (256, 256))
-        img = img / 255
+        img = img.reshape(len(img)**2,1) / 255
         imglist.append(img)
 
     # Menentukan mean dan selisih dari training face
-    imgarr = np.asarray(imglist)
-    mean = Mean.mean(imgarr)
-    selisih = [0 for i in range(len(imgarr))]
-    for i in range(len(imgarr)):
-        selisih[i] = abs(imgarr[i] - mean)
+    mean = Mean.mean_selisih(imglist)[1]
+    selisih = Mean.mean_selisih(imglist)[2]
 
     # Menentukan matriks Covarian
-    A = [[]for j in range(len(selisih[0]))]
-    for i in range(len(selisih)):
-        A = np.concatenate((A, selisih[i]), axis=1)
+    A = np.asarray(Mean.mean_selisih(imglist)[0])
     CovMat = cov.CovarianNumpy(A)
 
     # Menentukan eigen value dari matriks Covarian dan membentuk eigen vectornya
-    EigVec = np.array(eigval.eigen(CovMat)[1])
+    EigVec = np.array(eigval.eigen(CovMat))
 
     # Menentukan eigenface dari semua training image
     eigenface = []
-    for i in range(len(selisih)):
-        eigenface.append(np.asarray((np.matmul(EigVec, selisih[i]))))
+    for i in range(len(EigVec)):
+        eigenface.append(np.asarray((np.matmul(A,EigVec[i]))))
 
     eigfacearr = np.asarray(eigenface)
 

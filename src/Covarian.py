@@ -1,12 +1,12 @@
 import numpy as np
 
 # Membuat matriks kovarian dari matriks A yang merupakan konkat matriks dari semua matriks selisih setiap training image
-# X : matriks hasil konkat
-def CovarianNumpy(X):
+# X : matriks hasil konkat selisih
+def CovarianNumpy(A):
 
-    Y = np.transpose(X)
+    Y = np.transpose(A)
 
-    Covarian = np.matmul(X,Y)
+    Covarian = np.matmul(Y,A)
     
     return Covarian
 
