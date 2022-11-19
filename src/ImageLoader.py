@@ -7,6 +7,7 @@ import Covarian as cov
 import Eigenvalue as eigval
 import EucDistance as eucdis
 import mean_selisih as Mean
+import Koef as kf
 
 async def loadImage(testface, test_image):
     start_time = time.time()
@@ -39,21 +40,30 @@ async def loadImage(testface, test_image):
     eigenface = []
     for i in range(len(EigVec)):
         eigenface.append(np.asarray((np.matmul(A,EigVec[i]))))
-
     eigfacearr = np.asarray(eigenface)
+
+    # Menentukan matriks koefisien
+    arrMatKoef = kf.allMatKoef(eigfacearr,selisih)
 
     # Membaca test face dengan ukuran diubah menjadi 256 x 256 
     # dan nilai tiap elemennya dibagi 255, kemudian ditentukan eigenfacenya
     sampleimage = cv2.resize(cv2.cvtColor(
         (cv2.imread(testface)), cv2.COLOR_BGR2GRAY), (256, 256))
-    sampleimage = sampleimage / 255
-    selisihsam = abs(sampleimage - mean)
-    EigFaceSam = np.matmul(EigVec, selisihsam)
+    sampleimage = sampleimage.reshape(len(sampleimage)**2,1) / 255
+    selisihsam = sampleimage - mean
+
+    eigfacelen = len(eigfacearr)
+    MatKoefSam = []
+    for j in range(eigfacelen):
+            curr_eigFace = np.transpose(eigfacearr[i])
+            SamKoef = np.matmul(curr_eigFace,selisihsam)
+            MatKoefSam.append(SamKoef)
+    MatKoefSam = np.asarray(np.array(MatKoefSam).reshape(len(MatKoefSam),1))
 
     # Menghitung euclidean distance dari test face dengan semua training image
     eucdisarr = []
-    for i in range(len(eigfacearr)):
-        eucdisarr.append(eucdis.EucDistanceNumpy(EigFaceSam, eigfacearr[i]))
+    for i in range(len(arrMatKoef)):
+        eucdisarr.append(eucdis.EucDistanceNumpy(MatKoefSam, arrMatKoef[i]))
 
     # Menentukan euclidean distance terkecil dari test face
     min = eucdisarr[0]

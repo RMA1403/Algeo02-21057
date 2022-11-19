@@ -5,15 +5,13 @@ import numpy as np
 # test : matriks eigenface training image
 def EucDistanceNumpy(new,test):
 
-    newmat = np.subtract(new,test)
+    newmat = np.subtract(np.array(new),np.array(test))
 
     row = len(newmat)
-    col = len(newmat[0])
 
     count = 0
     for i in range(row):
-        for j in range(col):
-            count += (newmat[i][j])**2
+        count += (newmat[i][0])**2
 
     distance = np.sqrt(count)
 
@@ -27,13 +25,11 @@ def EucDistanceBase(new,test):
     newmat = [[0 for i in range(col)]for j in range(row)]
 
     for i in range(row):
-        for j in range(col):
-            newmat[i][j] = new[i][j] - test[i][j]
+        newmat[i][j] = new[i][0] - test[i][0]
 
     count = 0
     for i in range(row):
-        for j in range(col):
-            count += (newmat[i][j])**2
+        count += (newmat[i][0])**2
 
     distance = count**(0.5)
 
@@ -59,5 +55,4 @@ def EucDistanceBase(new,test):
 #         [0,-1,0],
 #         [0,0,0]]
 
-# eigennew = newFaceMatNumpy(X,Y,Z)
-# EucDistanceBase(eigennew,test2)
+# print(EucDistanceBase(test1,test2))
