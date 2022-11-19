@@ -34,7 +34,7 @@ def eigen(M):
 
     # Dekomposisi QR awal
     Q, R = qr_decomposition(M)
-    vec = Q
+    eigens = Q
 
     # Melakukan perkalian matriks R dan Q hingga didapat matriks diagonal
     hasEigen = False
@@ -54,18 +54,15 @@ def eigen(M):
             hasEigen = True
             break
         Q, R = qr_decomposition(A)
-        vec = vec @ Q
+        eigens = eigens @ Q
 
     # Mengembalikan nilai eigen dan vektor eigen dari matriks
     if (hasEigen):
-        eigens = []
-        for i in range(m):
-            if A[i][i] not in eigens and np.round(A[i][i]) != 0.0:
-                eigens.append(int(np.round(A[i][i])))
-        for i in range(len(vec)):
-            for j in range(len(vec[0])):
-                vec[i][j] = np.round(vec[i][j], 3)
-        return eigens, vec
+        for i in range(len(eigens)):
+            for j in range(len(eigens[0])):
+                eigens[i][j] = np.round(eigens[i][j], 3)
+        eigens = np.hsplit(eigens, eigens.shape[1])
+        return eigens
     else:
         return "Matriks tidak memiliki nilai eigen"
 
@@ -75,7 +72,7 @@ def eigen(M):
 # Matriks 2x2
 # A = np.array([[3, 0], [8, -1]])
 # print("Matrix A:\n", A)
-# print("Nilai eigen dari A:", eigen(A)[1])
+# print("Nilai eigen dari A:\n", eigen(A)[0], "\n" ,eigen(A)[1])
 # print(np.linalg.eig(A)[1])
 
 # # Matriks 2x2
