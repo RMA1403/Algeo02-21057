@@ -13,7 +13,7 @@ def allMatKoef(arrEigFace, arrSelisih):
         curr_image = arrSelisih[i]
         MatKoef = []
         for j in range(allEigFace):
-            curr_eigFace = np.array(arrEigFace[j]).reshape(1,len(arrEigFace[j]))
+            curr_eigFace = np.array(np.transpose(arrEigFace[j]))
             Koef = np.matmul(curr_eigFace,curr_image)
             MatKoef.append(Koef[0][0])
         currMatKoef = np.asarray(np.array(MatKoef).reshape(len(MatKoef),1))
@@ -21,7 +21,19 @@ def allMatKoef(arrEigFace, arrSelisih):
 
     return np.asarray(arrMatKoef)
 
+
+def findNorm(eigVec):
+    
+    row = len(eigVec)
+
+    total = 0
+    for i in range(row):
+        total += eigVec[i][0]**2
+    
+    Norm = total**0.5
+    return Norm
+
 # X = [[[1],[2],[3]],[[4],[5],[6]]]
-# Y = [[[0],[1],[2]]]
+# Y = [[[0],[1],[2]],[[9],[10],[11]]]
 
 # print((allMatKoef(X,Y)))

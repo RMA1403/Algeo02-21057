@@ -35,4 +35,7 @@ def mean_selisih(array):
         selisih.append(array[i]-m)
 
     return matA, m, np.asarray(selisih)
+
+# imgarr = [[[1],[2],[3]],[[1],[2],[3]]]
+
 # print(mean_selisih(imgarr))

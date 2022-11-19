@@ -61,6 +61,7 @@ def eigen(M):
         for i in range(len(eigens)):
             for j in range(len(eigens[0])):
                 eigens[i][j] = np.round(eigens[i][j], 3)
+        # print(eigens)
         eigens = np.hsplit(eigens, eigens.shape[1])
         return eigens
     else:
