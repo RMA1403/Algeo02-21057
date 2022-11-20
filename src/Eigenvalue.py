@@ -58,11 +58,9 @@ def eigen(M):
 
     # Mengembalikan nilai eigen dan vektor eigen dari matriks
     if (hasEigen):
-        for i in range(len(eigens)):
-            for j in range(len(eigens[0])):
-                eigens[i][j] = np.round(eigens[i][j], 3)
-        # print(eigens)
-        eigens = np.hsplit(eigens, eigens.shape[1])
+        # for i in range(len(eigens)):
+        #     for j in range(len(eigens[0])):
+        #         eigens[i][j] = np.round(eigens[i][j], 3)
         return eigens
     else:
         return "Matriks tidak memiliki nilai eigen"
@@ -74,6 +72,7 @@ def eigen(M):
 # A = np.array([[3, 0], [8, -1]])
 # print("Matrix A:\n", A)
 # print("Nilai eigen dari A:\n", eigen(A)[0], "\n" ,eigen(A)[1])
+# print(eigen(A).shape)
 # print(np.linalg.eig(A)[1])
 
 # # Matriks 2x2
