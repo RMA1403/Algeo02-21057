@@ -5,6 +5,7 @@ import functions.Eigen as eigval
 import functions.MeanSelisih as mean
 import os.path
 import time
+import math
 
 async def train_dataset(dataset_path):
   start_time = time.time()
@@ -129,6 +130,7 @@ async def match_image(image_path, dataset_weights, eigenfaces, mean_face, datase
   euc_distance = 0.0
   for i in range(dataset_weights.shape[0]):
     euc_distance += (weights[0:, 0][i] - dataset_weights[0:, 0][i])**2
+  euc_distance = math.sqrt(euc_distance)
   euc_min = euc_distance
 
   for i in range(1, dataset_weights.shape[1]):
@@ -136,6 +138,7 @@ async def match_image(image_path, dataset_weights, eigenfaces, mean_face, datase
     for j in range(dataset_weights.shape[0]):
       curr_dataset_weights = dataset_weights[0:, i]
       euc_distance += (weights[0:, 0][j] - curr_dataset_weights[j])**2
+    euc_distance = math.sqrt(euc_distance)
     if euc_distance < euc_min:
       euc_min = euc_distance
       idx = i

@@ -22,6 +22,9 @@ def _asyncio_thread_train(async_loop):
 def _asyncio_thread_match(async_loop):
   async_loop.run_until_complete(match_image(test_image, dataset_weights, eigenfaces, mean_face, dataset))
 
+def get_name(filename):
+  return filename[filename.rfind('/')+1:len(filename)-8]
+
 def input_dataset(event):
   global dataset
   new_dataset = filedialog.askdirectory(title="Select a dataset folder")
@@ -75,7 +78,11 @@ async def match_image(test_image, dataset_weights, eigenfaces, mean_face, datase
 
   main_canvas.delete("euc_dis")
   text = "Euclidian distance : " + str(round(euc_min, 3))
-  main_canvas.create_text(203, 500, fill="#00C738", font="Inter 11", text=text, tags="euc_dis")
+  main_canvas.create_text(223, 500, fill="#00C738", font="Inter 11", text=text, tags="euc_dis")
+  
+  main_canvas.delete("name")
+  text = get_name(output_image)
+  main_canvas.create_text(265, 80, fill="white", font="Inter 32 bold", text=text, tags="name")
 
 
 window = tk.Tk(className=" Face Recognition by Never Tsurrender")
@@ -109,6 +116,7 @@ main_canvas.create_image(625, 150, image=input_img, tags="input_img_image")
 output_img = ImageTk.PhotoImage(Image.open("./src/assets/images/placeholder.jpg").resize((256, 256)))
 main_canvas.create_image(625, 440, image=output_img, tags="output_img_image")
 
+main_canvas.create_text(265, 390, fill="#00C738", font="Inter 20 bold", text="", tags="name")
 main_canvas.create_text(265, 410, fill="#00C738", font="Inter 20 bold", text="Results")
 main_canvas.create_text(165, 450, fill="#00C738", font="Inter 12", text="", tags="train_time")
 main_canvas.create_text(165, 470, fill="#00C738", font="Inter 12", text="", tags="match_time")
