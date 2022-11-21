@@ -43,12 +43,9 @@ def mean_selisih(array):
         # selisih.append(array[i]-m)
 
     return matA, m
-<<<<<<< HEAD:src/mean_selisih.py
 
 #print(mean_selisih(imgarr)[1])
-=======
 
 # imgarr = [[[1],[2],[3]],[[1],[2],[3]]]
 
 # print(mean_selisih(imgarr))
->>>>>>> testing:src/functions/MeanSelisih.py
