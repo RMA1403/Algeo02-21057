@@ -27,14 +27,14 @@ def mean_selisih(array):
             # mengalikan hasil akhir matrix dengan 1/M
             m[i][j] = 1/count * m[i][j]
 
-    matA = [[]for i in range(len(array[0]))]
-    selisih = []
+    matA = array[0]-m
+    # selisih = []
     
-    for i in range(len(array)):
+    for i in range(1, len(array)):
         matA = np.concatenate((matA,(array[i]-m)), axis = 1)
-        selisih.append(array[i]-m)
+        # selisih.append(array[i]-m)
 
-    return matA, m, np.asarray(selisih)
+    return matA, m
 
 # imgarr = [[[1],[2],[3]],[[1],[2],[3]]]
 

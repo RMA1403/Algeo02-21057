@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 from glob import glob
 import Eigenvalue as eigval
+import mean_selisih as mean
 
 # Import dataset
 dataset_folder = "C:/Users/Rava Maulana/Desktop/Test Data"
@@ -17,21 +18,21 @@ for i in range(len(dataset_folder)):
   dataset.append(dataset_image)
 
 # Computes mean face of the dataset
-mean_face = np.zeros((256**2, 1))
-for i in range(len(dataset)):
-  mean_face += dataset[i]
-mean_face /= len(dataset)
+mean_face = mean.mean_selisih(dataset)[1]
+mean_face = mean_face.astype("float64")
 
 # Computes difference between each image and mean face
-temp_diff = dataset[i] - mean_face
-difference = temp_diff 
-for i in range(1, len(dataset)):
-  temp_diff = dataset[i] - mean_face
-  # difference.append(temp_diff)
-  difference = np.concatenate((difference, temp_diff), axis = 1)
+# temp_diff = dataset[i] - mean_face
+# difference = temp_diff 
+# for i in range(1, len(dataset)):
+#   temp_diff = dataset[i] - mean_face
+#   difference = np.concatenate((difference, temp_diff), axis = 1)
+difference = mean.mean_selisih(dataset)[0]
+difference = difference.astype("float64")
 
 # Computes the simplified covariance matrix
 simp_covariance = np.transpose(difference) @ difference
+simp_covariance /= len(dataset)
 simp_covariance /= len(dataset)
 simp_covariance /= len(dataset)
 simp_covariance /= len(dataset)
@@ -39,6 +40,7 @@ simp_covariance /= len(dataset)
 # Computes the eigenvalue of simplified covariance matrix
 # simp_eigens = np.linalg.eig(simp_covariance)[1]
 simp_eigens = eigval.eigen(simp_covariance)
+print(simp_eigens.shape)
 
 # Computes the eigenvalues from simplified eigenvalues
 curr_simp_eigen = simp_eigens[0:, 0]
@@ -58,7 +60,7 @@ for i in range(1, eigens.shape[1]):
 weights = np.transpose(eigenfaces) @ difference
 
 # Reconstruction
-curr_weight = weights[0:, 1]
+curr_weight = weights[0:, 5]
 curr_eigenface = eigenfaces[0:, 0].reshape(len(eigenfaces[0:, 0]), 1)
 reconstruction = curr_weight[0] * curr_eigenface
 for i in range(1, eigenfaces.shape[1]):
@@ -79,6 +81,7 @@ reconstruction = reconstruction.reshape(256, 256)
 reconstruction = np.around(reconstruction)
 reconstruction = reconstruction.astype("uint8")
 
+# print(curr_weight)
 cv2.imshow("Testing", reconstruction)
 cv2.waitKey(0)
 
