@@ -58,47 +58,6 @@ def eigen(M):
 
     # Mengembalikan nilai eigen dan vektor eigen dari matriks
     if (hasEigen):
-        # for i in range(len(eigens)):
-        #     for j in range(len(eigens[0])):
-        #         eigens[i][j] = np.round(eigens[i][j], 3)
         return eigens
     else:
         return "Matriks tidak memiliki nilai eigen"
-
-
-# Test case untuk beberapa matriks
-
-# Matriks 2x2
-# A = np.array([[3, 0], [8, -1]])
-# print("Matrix A:\n", A)
-# print("Nilai eigen dari A:\n", eigen(A)[0], "\n" ,eigen(A)[1])
-# print(eigen(A).shape)
-# print(np.linalg.eig(A)[1])
-
-# # Matriks 2x2
-# B = np.array([[1, 3], [3, 1]])
-# print("\nMatrix B:\n", B)
-# print("Nilai eigen dari B:", eigen(B)[1])
-# print(np.linalg.eig(B)[1])
-
-# # Matriks 3x3
-# C = np.array([[3, -2, 0], [-2, 3, 0], [0, 0, 5]])
-# print("\nMatrix C:\n", C)
-# print("Nilai eigen dari C:", eigen(C)[1])
-# print(np.linalg.eig(C)[1])
-
-# # Matriks dengan nilai eigen 0
-# D = np.array([[10, 0, 2], [0, 10, 4], [2, 4, 2]])
-# print("\nMatrix D:\n", D)
-# print("Nilai eigen dari D:", eigen(D)[1])
-# print(np.linalg.eig(D)[1])
-
-# # Matriks yang tidak memiliki nilai eigen
-# E = np.array([[-2, -1], [5, 2]])
-# print("\nMatrix E:\n", E)
-# print("Nilai eigen dari E:", eigen(E))
-
-# # Matriks yang bukan persegi
-# F = np.array([[-2, -1, 3], [5, 2, 8]])
-# print("\nMatrix F:\n", F)
-# print("Nilai eigen dari F:", eigen(F))

@@ -3,20 +3,38 @@ import numpy as np
 from glob import glob
 import functions.Eigen as eigval
 import functions.MeanSelisih as mean
-from os.path import exists
+import os.path
+import time
 
 async def train_dataset(dataset_path):
+  start_time = time.time()
   # Import dataset
   dataset_folder = dataset_path
-  
+
   # Checks for a cache file
-  if exists(dataset_folder + "/eigen_cache.txt"):
+  if os.path.exists(dataset_folder + "/dataset_weights_cache.txt") and os.path.exists(dataset_folder + "/eigenfaces_cache.txt") and os.path.exists(dataset_folder + "/meanface_cache.txt"):
     weight_arr = []
-    with open(dataset_folder + "/eigen_cache.txt", 'r') as f:
+    with open(dataset_folder + "/dataset_weights_cache.txt", 'r') as f:
       for line in f:
         weight_arr.append(line.split())
     weights = np.array(weight_arr, dtype="float64")
-    return weights
+    weights = np.transpose(weights)
+
+    eigenfaces_arr = []
+    with open(dataset_folder + "/eigenfaces_cache.txt", 'r') as f:
+      for line in f:
+        eigenfaces_arr.append(line.split())
+    eigenfaces = np.array(eigenfaces_arr, dtype="float64")
+    eigenfaces = np.transpose(eigenfaces)
+
+    meanface_arr = []
+    with open(dataset_folder + "/meanface_cache.txt", 'r') as f:
+      for line in f:
+        meanface_arr.append(line.split())
+    mean_face = np.array(meanface_arr, dtype="float64")
+    mean_face = np.transpose(mean_face)
+
+    return weights, eigenfaces, mean_face, (time.time() - start_time)
 
   dataset_folder = glob(dataset_folder + "/*.png") + glob(dataset_folder + "/*.jpg")
 
@@ -65,12 +83,63 @@ async def train_dataset(dataset_path):
   weights = np.transpose(eigenfaces) @ difference
 
   # Store the weights in a cache file
-  with open(dataset_path + "/eigen_cache.txt", 'w') as f:
+  with open(dataset_path + "/dataset_weights_cache.txt", 'w') as f:
     for i in range(weights.shape[1]):
       weight_str = ""
       for j in range(len(weights[0:, i])):
         weight_str += str(weights[0:, i][j]) + " "
       weight_str += "\n"
       f.write(weight_str)
+
+  # Store the eigenfaces in a cache file
+  with open(dataset_path + "/eigenfaces_cache.txt", 'w') as f:
+    for i in range(eigenfaces.shape[1]):
+      eigenfaces_str = ""
+      for j in range(len(eigenfaces[0:, i])):
+        eigenfaces_str += str(eigenfaces[0:, i][j]) + " "
+      eigenfaces_str += "\n"
+      f.write(eigenfaces_str)
+
+  # Store the mean face in a cache file
+  with open(dataset_path + "/meanface_cache.txt", 'w') as f:
+    meanface_str = ""
+    for i in range(len(mean_face[0:, 0])):
+      meanface_str += str(mean_face[0:, 0][i]) + " "
+    meanface_str += "\n"
+    f.write(meanface_str)
   
-  return weights
+  return weights, eigenfaces, mean_face, (time.time() - start_time)
+
+async def match_image(image_path, dataset_weights, eigenfaces, mean_face, dataset):
+  start_time = time.time()
+  # Import file gambar
+  image = cv2.imread(image_path)
+  image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+  image = cv2.resize(image, (256, 256))
+  image = image.reshape(256**2, 1)
+
+  # Menghitung selisih dari gambar
+  difference = image - mean_face
+
+  # Menghitung bobot dari setiap eigenface
+  weights = np.transpose(eigenfaces) @ difference
+
+  # Mencari euclidian distance terkecil
+  idx_min = 0
+  euc_distance = 0.0
+  for i in range(dataset_weights.shape[0]):
+    euc_distance += (weights[0:, 0][i] - dataset_weights[0:, 0][i])**2
+  euc_min = euc_distance
+
+  for i in range(1, dataset_weights.shape[1]):
+    euc_distance = 0.0
+    for j in range(dataset_weights.shape[0]):
+      curr_dataset_weights = dataset_weights[0:, i]
+      euc_distance += (weights[0:, 0][j] - curr_dataset_weights[j])**2
+    if euc_distance < euc_min:
+      euc_min = euc_distance
+      idx = i
+
+  output_image = (glob(dataset + "/*.png") + glob(dataset + "/*.jpg"))[idx]
+  output_image = output_image.replace("\\", "/")
+  return euc_min, output_image, (time.time() - start_time)

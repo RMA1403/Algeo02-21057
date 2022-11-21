@@ -1,17 +1,26 @@
 import tkinter as tk
+import asyncio
+import threading
 from tkinter import filedialog
 from PIL import Image, ImageTk
 from glob import glob
-import asyncio
-import threading
+
 import functions.FaceRecognition as FaceRecon
+
 
 dataset = ""
 test_image = ""
 dataset_weights = None
-new_img = None
+eigenfaces = None
+mean_face = None
+temp1 = None
+temp2 = None
 
-async_loop = asyncio.new_event_loop()
+def _asyncio_thread_train(async_loop):
+  async_loop.run_until_complete(train_dataset(dataset))
+
+def _asyncio_thread_match(async_loop):
+  async_loop.run_until_complete(match_image(test_image, dataset_weights, eigenfaces, mean_face, dataset))
 
 def input_dataset(event):
   global dataset
@@ -21,30 +30,52 @@ def input_dataset(event):
 
 def start_train_dataset(event):
   global async_loop
-  thread_target = lambda: async_loop.run_until_complete(train_dataset(dataset))
-  threading.Thread(target=thread_target).start()
+  main_canvas.create_text(265, 220, fill="#00C738", font="Inter 32 bold", text="Processing", tags="process_label")
+  threading.Thread(target=_asyncio_thread_train, args=(async_loop,)).start()
 
 async def train_dataset(dataset):
   global dataset_weights
-  dataset_weights = await FaceRecon.train_dataset(dataset)
+  global eigenfaces
+  global mean_face
+  dataset_weights, eigenfaces, mean_face, train_time = await FaceRecon.train_dataset(dataset)
+  
+  main_canvas.delete("process_label")
+
+  main_canvas.delete("train_time")
+  text = "Dataset training time : " + str(round(train_time, 3)) + " second"
+  main_canvas.create_text(245, 450, fill="#00C738", font="Inter 11", text=text, tags="train_time")
+
 
 def input_image(event):
   global test_image
-  global new_img
-
+  global temp1
   new_test_image = filedialog.askopenfilename(title="Select an image")
   if new_test_image != "":
     test_image = glob(new_test_image)[0]
 
     main_canvas.delete("input_img_image")
-    new_img = ImageTk.PhotoImage(Image.open(new_test_image).resize((256, 256)))
-    main_canvas.create_image(625, 150, image=new_img, tags="input_img_image2")
+    temp1 = ImageTk.PhotoImage(Image.open(new_test_image).resize((256, 256)))
+    main_canvas.create_image(625, 150, image=temp1, tags="input_img_image")
 
 def start_recognition(event):
-  global test_image
-  global dataset
+  global async_loop
+  threading.Thread(target=_asyncio_thread_match, args=(async_loop,)).start()
 
-  print(dataset_weights)
+async def match_image(test_image, dataset_weights, eigenfaces, mean_face, dataset):
+  global temp2
+  euc_min, output_image, match_time = await FaceRecon.match_image(test_image, dataset_weights, eigenfaces, mean_face, dataset)
+
+  main_canvas.delete("output_img_image")
+  temp2 = ImageTk.PhotoImage(Image.open(output_image).resize((256, 256)))
+  main_canvas.create_image(625, 440, image=temp2, tags="output_img_image")
+
+  main_canvas.delete("match_time")
+  text = "Image recognition time : " + str(round(match_time, 3)) + " second"
+  main_canvas.create_text(250, 475, fill="#00C738", font="Inter 11", text=text, tags="match_time")
+
+  main_canvas.delete("euc_dis")
+  text = "Euclidian distance : " + str(round(euc_min, 3))
+  main_canvas.create_text(203, 500, fill="#00C738", font="Inter 11", text=text, tags="euc_dis")
 
 
 window = tk.Tk(className=" Face Recognition by Never Tsurrender")
@@ -78,4 +109,10 @@ main_canvas.create_image(625, 150, image=input_img, tags="input_img_image")
 output_img = ImageTk.PhotoImage(Image.open("./src/assets/images/placeholder.jpg").resize((256, 256)))
 main_canvas.create_image(625, 440, image=output_img, tags="output_img_image")
 
+main_canvas.create_text(265, 410, fill="#00C738", font="Inter 20 bold", text="Results")
+main_canvas.create_text(165, 450, fill="#00C738", font="Inter 12", text="", tags="train_time")
+main_canvas.create_text(165, 470, fill="#00C738", font="Inter 12", text="", tags="match_time")
+main_canvas.create_text(165, 490, fill="#00C738", font="Inter 12", text="", tags="euc_dis")
+
+async_loop = asyncio.new_event_loop()
 window.mainloop()
