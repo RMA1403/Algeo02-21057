@@ -146,3 +146,37 @@ async def match_image(image_path, dataset_weights, eigenfaces, mean_face, datase
   output_image = (glob(dataset + "/*.png") + glob(dataset + "/*.jpg"))[idx]
   output_image = output_image.replace("\\", "/")
   return euc_min, output_image, (time.time() - start_time)
+
+async def match_image_webcam(cvimage, dataset_weights, eigenfaces, mean_face, dataset):
+  start_time = time.time()
+  # Import file gambar
+  image = cv2.resize(cvimage, (256, 256))
+  image = image.reshape(256**2, 1)
+
+  # Menghitung selisih dari gambar
+  difference = image - mean_face
+
+  # Menghitung bobot dari setiap eigenface
+  weights = np.transpose(eigenfaces) @ difference
+
+  # Mencari euclidian distance terkecil
+  idx_min = 0
+  euc_distance = 0.0
+  for i in range(dataset_weights.shape[0]):
+    euc_distance += (weights[0:, 0][i] - dataset_weights[0:, 0][i])**2
+  euc_distance = math.sqrt(euc_distance)
+  euc_min = euc_distance
+
+  for i in range(1, dataset_weights.shape[1]):
+    euc_distance = 0.0
+    for j in range(dataset_weights.shape[0]):
+      curr_dataset_weights = dataset_weights[0:, i]
+      euc_distance += (weights[0:, 0][j] - curr_dataset_weights[j])**2
+    euc_distance = math.sqrt(euc_distance)
+    if euc_distance < euc_min:
+      euc_min = euc_distance
+      idx = i
+
+  output_image = (glob(dataset + "/*.png") + glob(dataset + "/*.jpg"))[idx]
+  output_image = output_image.replace("\\", "/")
+  return euc_min, output_image, (time.time() - start_time)
