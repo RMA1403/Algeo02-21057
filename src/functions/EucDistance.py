@@ -25,7 +25,7 @@ def EucDistanceBase(new,test):
     newmat = [[0 for i in range(col)]for j in range(row)]
 
     for i in range(row):
-        newmat[i][j] = new[i][0] - test[i][0]
+        newmat[i][0] = new[i][0] - test[i][0]
 
     count = 0
     for i in range(row):
