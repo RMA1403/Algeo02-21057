@@ -4,9 +4,9 @@ from glob import glob
 import time
 
 import Covarian as cov
-import Eigenvalue as eigval
+import Eigen as eigval
 import EucDistance as eucdis
-import mean_selisih as Mean
+import functions.MeanSelisih as Mean
 import Koef as kf
 test_image = "./testimage"
 test_image = glob(test_image + "/*.png") + glob(test_image + "/*.jpg")

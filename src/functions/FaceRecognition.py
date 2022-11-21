@@ -1,14 +1,14 @@
 import cv2
 import numpy as np
 from glob import glob
-import Eigenvalue as eigval
-import mean_selisih as mean
+import functions.Eigen as eigval
+import functions.MeanSelisih as mean
 from os.path import exists
 
 async def train_dataset(dataset_path):
   # Import dataset
   dataset_folder = dataset_path
-
+  
   # Checks for a cache file
   if exists(dataset_folder + "/eigen_cache.txt"):
     weight_arr = []

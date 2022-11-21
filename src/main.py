@@ -2,306 +2,80 @@ import tkinter as tk
 from tkinter import filedialog
 from PIL import Image, ImageTk
 from glob import glob
-import ImageLoader
 import asyncio
 import threading
+import functions.FaceRecognition as FaceRecon
 
-# Deklarasi variabel global
-filename = "./src/placeholder.jpg"
 dataset = ""
-result = "./src/placeholder.jpg"
-res_img = None
-result_image_frame = None
-result_image = None
-result_data_frame = None
-euc_distance = None
-exec_time_frame = None
-exec_time = None
-dataset_folder_label = None
-test_image_file_label = None
-start_btn = None
-processing_label = None
-start_frame = None
+test_image = ""
+dataset_weights = None
+new_img = None
 
-
-def _asyncio_thread(async_loop):
-    async_loop.run_until_complete(loadImage(filename, dataset))
-
-
-def do_tasks(async_loop):
-    threading.Thread(target=_asyncio_thread, args=(async_loop,)).start()
-
-
-def startAlgorithm():
-    """Fungsi untuk memulai algoritma pengenalan wajah"""
-    # Deklarasi variabel
-    global start_frame
-    global start_btn
-    global processing_label
-
-    # Menampilkan label "processing"
-    start_btn.destroy()
-    processing_label = tk.Label(
-        start_frame, text="Processing", fg="green", font=("Helvetica", 18, "bold"))
-    processing_label.configure(background='white')
-    processing_label.grid(row=0, column=0)
-
-    do_tasks(async_loop)
-
-
-async def loadImage(filename, dataset):
-    global result
-    global result_image
-    global result_image_frame
-    global res_img
-    global result_data_frame
-    global euc_distance
-    global exec_time_frame
-    global exec_time
-    global start_btn
-    global processing_label
-    global startAlgorithm
-    global start_frame
-
-    new_result = await ImageLoader.loadImage(filename, dataset)
-    if new_result[0] != "":
-        result = new_result[0]
-        result_image.destroy()
-        res_img = ImageTk.PhotoImage(Image.open(
-            result).resize((256, 256)))
-        result_image = tk.Canvas(
-            result_image_frame, width=256, height=256, highlightthickness=0)
-        result_image.create_image(0, 0, anchor='nw', image=res_img)
-        result_image.configure(background='white')
-        result_image.grid(row=1, column=0)
-
-        if euc_distance != None:
-            euc_distance.destroy()
-        euc_distance = tk.Label(result_data_frame, text=(
-            "Euclidian distance: " + str(new_result[1])), font=("Helvetica", 8))
-        euc_distance.configure(background='white')
-        euc_distance.grid(row=1, column=0)
-
-        if exec_time != None:
-            exec_time.destroy()
-        exec_time = tk.Label(exec_time_frame, text=(
-            "Execution time: " + str(new_result[2])), font=("Helvetica", 8))
-        exec_time.configure(background='white')
-        exec_time.grid(row=0, column=0)
-
-        processing_label.destroy()
-        start_btn = tk.Button(start_frame, text="START", font=(
-            "Helvetica", 20, "bold"), command=startAlgorithm)
-        start_btn.grid(row=0, column=0)
-
-
-def main(async_loop):
-    """Fungsi untuk menampilkan user interface"""
-    # Deklarasi variabel
-    global filename
-    global dataset
-    global result
-    global result_image
-    global result_image_frame
-    global res_img
-    global result_data_frame
-    global exec_time_frame
-    global start_btn
-    global processing_label
-    global startAlgorithm
-    global start_frame
-
-    def addTestImage():
-        """Fungsi untuk menambahkan test image"""
-        # Deklarasi variabel
-        nonlocal test_image
-        nonlocal img
-        global filename
-        global test_image_file_label
-        nonlocal image_input_frame
-
-        # Melakukan input file
-        filename = filedialog.askopenfilename(title="Select an image")
-        if filename != "":
-            # Menampilkan test image
-            test_image.destroy()
-            img = ImageTk.PhotoImage(Image.open(
-                filename).resize((256, 256)))
-            test_image = tk.Canvas(
-                test_image_frame, width=256, height=256, highlightthickness=0)
-            test_image.create_image(0, 0, anchor='nw', image=img)
-            test_image.configure(background=bg_color)
-            test_image.grid(row=1, column=0)
-
-            # Menampilkan nama file test image
-            if filename != "./src/placeholder.jpg":
-                if test_image_file_label != None:
-                    test_image_file_label.destroy()
-                test_image_file_label = tk.Label(
-                    image_input_frame, text=filename, wraplength=130, fg="green", font=("Helvetica", 7))
-                test_image_file_label.configure(background=bg_color)
-                test_image_file_label.grid(row=2, column=0)
-
-    def addDataset():
-        """Fungsi untuk menambahkan folder dataset"""
-        # Deklarasi variabel
-        global dataset
-        global dataset_folder_label
-        nonlocal dataset_input_frame
-
-        # Melakukukan input folder
-        dataset = filedialog.askdirectory(title="Select a dataset folder")
-        if dataset != "":
-            # Menampilkan nama folder dataset
-            if dataset_folder_label != None:
-                dataset_folder_label.destroy()
-            dataset_folder_label = tk.Label(
-                dataset_input_frame, text=dataset, wraplength=130, fg="green", font=("Helvetica", 7))
-            dataset_folder_label.configure(background=bg_color)
-            dataset_folder_label.grid(row=2, column=0)
-
-    # Konfigurasi warna
-    bg_color = "white"
-
-    # Konfigurasi window
-    window = tk.Tk(className=" Face Recognition by Never Tsurrender")
-    window.configure(background=bg_color)
-
-    main_frame = tk.Frame(window, padx=100, pady=30)
-    main_frame.configure(background=bg_color)
-    main_frame.pack()
-
-    # Menampilkan header
-    header_frame = tk.Frame(
-        main_frame)
-    header_frame.configure(background=bg_color)
-
-    header_label_frame = tk.Frame(header_frame)
-    header_label_frame.configure(background=bg_color)
-
-    header_label = tk.Label(
-        header_label_frame, text="Face Recognition",  font=("Helvetica", 36, "bold"))
-    header_label.configure(background=bg_color)
-
-    canvas_frame = tk.Frame(header_frame)
-    canvas_frame.configure(background=bg_color)
-
-    line = tk.Canvas(canvas_frame, width=900,
-                     height=20, highlightthickness=0)
-    line.configure(background=bg_color)
-    line.create_line(0, 17, 900, 17, width=3)
-    line.pack(fill="both", expand=True)
-
-    header_frame.grid(row=0, column=0, columnspan=3, pady=20)
-    header_label_frame.grid(row=0, column=0)
-    header_label.grid(row=0, column=0, padx=250)
-    canvas_frame.grid(row=1, column=0)
-
-    # Menampilkan input dataset
-    dataset_input_frame = tk.Frame(
-        main_frame, padx=10)
-    dataset_input_frame.configure(background=bg_color)
-
-    dataset_input_label = tk.Label(
-        dataset_input_frame, text="Insert Your Dataset",  font=("Helvetica", 12))
-    dataset_input_label.configure(background=bg_color)
-
-    dataset_btn = tk.Button(
-        dataset_input_frame, text="Choose dataset", command=addDataset)
-
-    dataset_input_frame.grid(row=1, column=0)
-    dataset_input_label.grid(row=0, column=0)
-    dataset_btn.grid(row=1, column=0)
-
-    # Menampilkan input test image
-    image_input_frame = tk.Frame(
-        main_frame, padx=10)
-    image_input_frame.configure(background=bg_color)
-
-    image_input_label = tk.Label(
-        image_input_frame, text="Insert Your Image",  font=("Helvetica", 12))
-    image_input_label.configure(background=bg_color)
-
-    test_image_btn = tk.Button(
-        image_input_frame, text="Choose Image", command=addTestImage)
-
-    image_input_frame.grid(row=2, column=0)
-    image_input_label.grid(row=0, column=0)
-    test_image_btn.grid(row=1, column=0)
-
-    # Menampilkan tombol start
-    start_frame = tk.Frame(main_frame, padx=10)
-    start_frame.configure(background=bg_color)
-
-    start_btn = tk.Button(start_frame, text="START", font=(
-        "Helvetica", 20, "bold"), command=startAlgorithm)
-
-    start_frame.grid(row=3, column=0)
-    start_btn.grid(row=0, column=0)
-
-    # Menampilkan data hasil pengenalan wajah
-    result_data_frame = tk.Frame(main_frame, padx=10)
-    result_data_frame.configure(background=bg_color)
-
-    result_label = tk.Label(
-        result_data_frame, text="Result", font=("Helvetica", 12))
-    result_label.configure(background=bg_color)
-
-    result_data_frame.grid(row=4, column=0)
-    result_label.grid(row=0, column=0)
-
-    # Menampilkan test image
-    test_image_frame = tk.Frame(main_frame, padx=10)
-    test_image_frame.configure(background=bg_color)
-
-    test_image_label = tk.Label(
-        test_image_frame, text="Test Image", font=("Helvetica", 12))
-    test_image_label.configure(background=bg_color)
-
-    img = ImageTk.PhotoImage(Image.open(
-        filename).resize((256, 256)))
-    test_image = tk.Canvas(test_image_frame, width=256,
-                           height=256, highlightthickness=0)
-    test_image.create_image(0, 0, anchor='nw', image=img)
-    test_image.configure(background=bg_color)
-
-    test_image_frame.grid(sticky='E', row=1, column=1, rowspan=4)
-    test_image_label.grid(sticky='W', row=0, column=0)
-    test_image.grid(row=1, column=0)
-
-    # Menampilkan gambar hasil
-    result_image_frame = tk.Frame(main_frame, padx=10)
-    result_image_frame.configure(background=bg_color)
-
-    result_image_label = tk.Label(
-        result_image_frame, text="Closest Result", font=("Helvetica", 12))
-    result_image_label.configure(background=bg_color)
-
-    res_img = ImageTk.PhotoImage(Image.open(
-        result).resize((256, 256)))
-    result_image = tk.Canvas(result_image_frame, width=256,
-                             height=256, highlightthickness=0)
-    result_image.create_image(0, 0, anchor='nw', image=res_img)
-    result_image.configure(background=bg_color)
-
-    result_image_frame.grid(sticky='E', row=1, column=2, rowspan=4)
-    result_image_label.grid(sticky='W', row=0, column=0)
-    result_image.grid(row=1, column=0)
-
-    # Menampilkan waktu eksekusi algoritma
-    exec_time_frame = tk.Frame(main_frame)
-    exec_time_frame.configure(background=bg_color)
-
-    exec_time_frame.grid(row=5, column=1)
-
-    # Padding bottom
-    padding_bottom = tk.Frame(main_frame, height=100)
-    padding_bottom.configure(background=bg_color)
-    padding_bottom.grid(row=6, column=0, columnspan=3)
-
-    window.mainloop()
-
-
-# Loop utama program
 async_loop = asyncio.new_event_loop()
-main(async_loop)
+
+def input_dataset(event):
+  global dataset
+  new_dataset = filedialog.askdirectory(title="Select a dataset folder")
+  if new_dataset != "":
+    dataset = new_dataset
+
+def start_train_dataset(event):
+  global async_loop
+  thread_target = lambda: async_loop.run_until_complete(train_dataset(dataset))
+  threading.Thread(target=thread_target).start()
+
+async def train_dataset(dataset):
+  global dataset_weights
+  dataset_weights = await FaceRecon.train_dataset(dataset)
+
+def input_image(event):
+  global test_image
+  global new_img
+
+  new_test_image = filedialog.askopenfilename(title="Select an image")
+  if new_test_image != "":
+    test_image = glob(new_test_image)[0]
+
+    main_canvas.delete("input_img_image")
+    new_img = ImageTk.PhotoImage(Image.open(new_test_image).resize((256, 256)))
+    main_canvas.create_image(625, 150, image=new_img, tags="input_img_image2")
+
+def start_recognition(event):
+  global test_image
+  global dataset
+
+  print(dataset_weights)
+
+
+window = tk.Tk(className=" Face Recognition by Never Tsurrender")
+window.geometry("800x600")
+
+main_canvas = tk.Canvas(window, highlightthickness=0, width=800, height=600)
+main_canvas.pack(expand=True, fill="both")
+
+bg_img = ImageTk.PhotoImage(Image.open("./src/assets/images/background.png"))
+main_canvas.create_image(0, 0, anchor="nw", image=bg_img)
+
+input_dataset_img = ImageTk.PhotoImage(Image.open("./src/assets/images/input_dataset.png"))
+main_canvas.create_image(175, 155, image=input_dataset_img, tags="input_dataset_btn")
+main_canvas.tag_bind("input_dataset_btn", '<Button-1>', input_dataset)
+
+train_dataset_img = ImageTk.PhotoImage(Image.open("./src/assets/images/train_dataset.png"))
+main_canvas.create_image(355, 155, image=train_dataset_img, tags="train_dataset_btn")
+main_canvas.tag_bind("train_dataset_btn", '<Button-1>', start_train_dataset)
+
+test_image_img = ImageTk.PhotoImage(Image.open("./src/assets/images/test_image.png"))
+main_canvas.create_image(175, 300, image=test_image_img, tags="test_image_btn")
+main_canvas.tag_bind("test_image_btn", '<Button-1>', input_image)
+
+start_recognition_img = ImageTk.PhotoImage(Image.open("./src/assets/images/start_recognition.png"))
+main_canvas.create_image(355, 300, image=start_recognition_img, tags="start_recognition_btn")
+main_canvas.tag_bind("start_recognition_btn", '<Button-1>', start_recognition)
+
+input_img = ImageTk.PhotoImage(Image.open("./src/assets/images/placeholder.jpg").resize((256, 256)))
+main_canvas.create_image(625, 150, image=input_img, tags="input_img_image")
+
+output_img = ImageTk.PhotoImage(Image.open("./src/assets/images/placeholder.jpg").resize((256, 256)))
+main_canvas.create_image(625, 440, image=output_img, tags="output_img_image")
+
+window.mainloop()
