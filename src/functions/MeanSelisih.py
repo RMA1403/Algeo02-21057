@@ -3,10 +3,9 @@ import numpy as np
 from glob import glob
 import time
 
-import Covarian as cov
-import Eigenvalue as eigval
-import EucDistance as eucdis
-import mean_selisih as Mean
+import functions.Covarian as cov
+import functions.Eigen as eigval
+import functions.EucDistance as eucdis
 
 # path = "./testImage"
 # test_image = glob(path + "/*.png") + glob(path + "/*.jpg")#
