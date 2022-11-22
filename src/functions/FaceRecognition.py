@@ -141,9 +141,9 @@ async def match_image(image_path, dataset_weights, eigenfaces, mean_face, datase
     euc_distance = math.sqrt(euc_distance)
     if euc_distance < euc_min:
       euc_min = euc_distance
-      idx = i
+      idx_min = i
 
-  output_image = (glob(dataset + "/*.png") + glob(dataset + "/*.jpg"))[idx]
+  output_image = (glob(dataset + "/*.png") + glob(dataset + "/*.jpg"))[idx_min]
   output_image = output_image.replace("\\", "/")
   return euc_min, output_image, (time.time() - start_time)
 
@@ -175,8 +175,8 @@ async def match_image_webcam(cvimage, dataset_weights, eigenfaces, mean_face, da
     euc_distance = math.sqrt(euc_distance)
     if euc_distance < euc_min:
       euc_min = euc_distance
-      idx = i
+      idx_min = i
 
-  output_image = (glob(dataset + "/*.png") + glob(dataset + "/*.jpg"))[idx]
+  output_image = (glob(dataset + "/*.png") + glob(dataset + "/*.jpg"))[idx_min]
   output_image = output_image.replace("\\", "/")
   return euc_min, output_image, (time.time() - start_time)
