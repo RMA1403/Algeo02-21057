@@ -31,7 +31,7 @@ py main.py
 3. Input gambar yang ingin di uji coba dengan menekan tombol "test image"
 4. Mulai pengenalan wajah dengan menekan tombol "start recognition
 
-### Pengenalan wajah menggunakan kamera :
+#### Pengenalan wajah menggunakan kamera :
 1. Input folder dataset dengan menekan tombol "input dataset"
 2. Melakukan pengolahan dataset dengan menekan tombol "train dataset"
 3. Nyalakan kamera dengan menekan tombol "open camera"
