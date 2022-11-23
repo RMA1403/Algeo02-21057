@@ -1,4 +1,4 @@
-# Tugas Besar 2 : Aplikasi Nilai Eigen dalam Pengenalan Wajah
+# Tubes 2 : Aplikasi Nilai Eigen dalam Pengenalan Wajah
 
 Program ini merupakan program pengenalan wajah menggunakan **python**. Algoritma pengenalan wajah yang digunakan adalah pengenalan wajah menggunakan
 eigenface. Library python yang digunakan dalam program ini diantaranya, **numpy** untuk pemrosesan matriks, **openCV** untuk pengolahan gambar, dan
