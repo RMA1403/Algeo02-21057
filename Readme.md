@@ -29,7 +29,7 @@ py main.py
 1. Input folder dataset dengan menekan tombol "input dataset"
 2. Melakukan pengolahan dataset dengan menekan tombol "train dataset"
 3. Input gambar yang ingin di uji coba dengan menekan tombol "test image"
-4. Mulai pengenalan wajah dengan menekan tomboll "start recognition
+4. Mulai pengenalan wajah dengan menekan tombol "start recognition
 
 ### Pengenalan wajah menggunakan kamera :
 1. Input folder dataset dengan menekan tombol "input dataset"
